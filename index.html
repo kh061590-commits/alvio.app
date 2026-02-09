@@ -1,0 +1,3630 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>نظام ترويج الأرقام</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #00ff9d;
+            --dark: #0c0b1e;
+            --light: #ffffff;
+            --card-bg: linear-gradient(145deg, #1a1a2e, #16213e);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, #1a1036 100%);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 10px;
+            font-size: 14px;
+            overflow-x: hidden;
+        }
+
+        /* شعار التطبيق */
+        .app-logo {
+            text-align: center;
+            margin: 10px auto 20px;
+            padding: 15px;
+            max-width: 400px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .app-logo h1 {
+            color: var(--accent);
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-shadow: 0 2px 10px rgba(106, 17, 203, 0.5);
+        }
+
+        .app-logo p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+        }
+
+        /* قسم المصادقة */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 10px;
+        }
+
+        .auth-box {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 25px 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+        }
+
+        .auth-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--accent);
+            font-size: 1.4rem;
+            text-shadow: 0 2px 8px rgba(0, 255, 157, 0.3);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-size: 1.1rem;
+            z-index: 2;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 45px 16px 15px;
+            border: 2px solid transparent;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--light);
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 255, 157, 0.2);
+            transform: translateY(-2px);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        /* الأزرار العامة */
+        .btn {
+            padding: 16px 24px;
+            border: none;
+            border-radius: 15px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-top: 5px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(106, 17, 203, 0.5);
+        }
+
+        .btn-success {
+            background: var(--gradient-4);
+            color: white;
+            box-shadow: 0 6px 20px rgba(67, 233, 123, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(67, 233, 123, 0.5);
+        }
+
+        .btn-danger {
+            background: var(--gradient-2);
+            color: white;
+            box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.5);
+        }
+
+        .btn-info {
+            background: var(--gradient-3);
+            color: white;
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-info:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.5);
+        }
+
+        .btn-promoter {
+            background: var(--gradient-2);
+            color: white;
+            box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+        }
+
+        .btn-promoter:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.5);
+        }
+
+        .btn-small {
+            padding: 10px 16px;
+            font-size: 13px;
+            border-radius: 12px;
+            width: auto;
+            min-width: 80px;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .auth-link {
+            color: var(--accent);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .auth-link:hover {
+            background: rgba(0, 255, 157, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* التطبيق الرئيسي */
+        #appContent {
+            display: none;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+            gap: 15px;
+        }
+
+        /* الهيدر */
+        .app-header {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 10px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 2px 8px rgba(0, 255, 157, 0.3);
+        }
+
+        .role-badge {
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            width: fit-content;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .role-owner {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .role-promoter {
+            background: var(--gradient-2);
+            color: white;
+        }
+
+        .role-beneficiary {
+            background: var(--gradient-3);
+            color: white;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--light);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 18px;
+            border-radius: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .logout-btn:hover {
+            background: rgba(240, 147, 251, 0.2);
+            border-color: rgba(240, 147, 251, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(240, 147, 251, 0.3);
+        }
+
+        /* الإحصائيات */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 18px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-card:nth-child(1) {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+        }
+
+        .stat-card:nth-child(2) {
+            background: linear-gradient(145deg, #1e3c72, #2a5298);
+        }
+
+        .stat-card:nth-child(3) {
+            background: linear-gradient(145deg, #0f2027, #203a43);
+        }
+
+        .stat-card:nth-child(4) {
+            background: linear-gradient(145deg, #141e30, #243b55);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 10px 0;
+            color: var(--accent);
+            text-shadow: 0 2px 10px rgba(0, 255, 157, 0.5);
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* علامات التبويب */
+        .tabs-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: var(--card-shadow);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 16px 8px;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 14px;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+        }
+
+        .tab.active {
+            background: var(--gradient-1);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* أزرار الإجراءات */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .action-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border-color: rgba(106, 17, 203, 0.5);
+        }
+
+        .action-icon {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+            text-shadow: 0 2px 10px rgba(0, 255, 157, 0.5);
+        }
+
+        .action-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--light);
+        }
+
+        .action-desc {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.4;
+        }
+
+        /* علامات الجانبية */
+        .side-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            z-index: 1;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transform: rotate(2deg);
+            max-width: 90px;
+            word-break: keep-all;
+            white-space: nowrap;
+        }
+
+        .side-badge.taken-by-beneficiary {
+            background: var(--gradient-2);
+            border-color: rgba(240, 147, 251, 0.5);
+        }
+
+        .side-badge.taken-by-promoter {
+            background: var(--gradient-3);
+            border-color: rgba(79, 172, 254, 0.5);
+        }
+
+        .side-badge.taken-from-promoter {
+            background: var(--gradient-4);
+            border-color: rgba(67, 233, 123, 0.5);
+            font-size: 11px;
+        }
+
+        /* قسم كود الترويج */
+        .promo-code-section,
+        .use-promo-section,
+        .beneficiaries-section,
+        .promoter-numbers-section {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .promo-code-section::before,
+        .use-promo-section::before,
+        .beneficiaries-section::before,
+        .promoter-numbers-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .promo-code-section::before {
+            background: var(--gradient-1);
+        }
+
+        .use-promo-section::before {
+            background: var(--gradient-3);
+        }
+
+        .beneficiaries-section::before {
+            background: var(--gradient-4);
+        }
+
+        .promoter-numbers-section::before {
+            background: var(--gradient-2);
+        }
+
+        .section-title {
+            color: var(--accent);
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 8px rgba(0, 255, 157, 0.3);
+        }
+
+        /* إطار الكود */
+        .code-frame-container {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 20px;
+            margin: 15px 0;
+            text-align: center;
+            border: 3px solid rgba(106, 17, 203, 0.5);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .small-change-btn {
+            background: var(--gradient-2);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .small-change-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
+        }
+
+        .code-display {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 4px;
+            font-family: 'Courier New', monospace;
+            direction: ltr;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            flex: 1;
+            text-shadow: 0 0 20px rgba(0, 255, 157, 0.7);
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.2);
+        }
+
+        .code-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* بطاقات الأرقام */
+        .numbers-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .number-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 15px 18px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: visible;
+            box-shadow: var(--card-shadow);
+            min-height: 140px;
+            margin-bottom: 12px;
+        }
+
+        .number-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--gradient-1);
+        }
+
+        .number-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 10px;
+            flex-wrap: nowrap;
+            min-height: 40px;
+        }
+
+        .number-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+            direction: ltr;
+            text-align: left;
+            unicode-bidi: bidi-override;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 10px rgba(0, 255, 157, 0.5);
+            flex: 1;
+            line-height: 1.3;
+            padding: 8px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .number-type {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+            white-space: nowrap;
+            margin: 0;
+        }
+
+        .type-owner {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .type-beneficiary {
+            background: var(--gradient-3);
+            color: white;
+        }
+
+        .type-promoter {
+            background: var(--gradient-3);
+            color: white;
+        }
+
+        /* تعديل للغة العربية */
+        [dir="rtl"] .number-value {
+            text-align: right;
+        }
+
+        .number-info {
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+        }
+
+        .info-item i {
+            color: var(--accent);
+            width: 14px;
+            font-size: 12px;
+        }
+
+        .number-notes-container {
+            margin-top: 12px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border-right: 4px solid var(--accent);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .number-notes-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .number-notes {
+            font-size: 12px;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.7);
+            max-height: 50px;
+            overflow-y: auto;
+        }
+
+        .number-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--light);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-btn.copy {
+            background: rgba(0, 255, 157, 0.1);
+            color: var(--accent);
+            border-color: rgba(0, 255, 157, 0.3);
+        }
+
+        .action-btn.copy.copied {
+            background: var(--gradient-4) !important;
+            color: white !important;
+            border-color: rgba(67, 233, 123, 0.5) !important;
+            box-shadow: 0 6px 20px rgba(67, 233, 123, 0.4) !important;
+        }
+
+        .action-btn.copy.taken-by-beneficiary {
+            background: var(--gradient-2) !important;
+            color: white !important;
+            border-color: rgba(240, 147, 251, 0.5) !important;
+        }
+
+        .action-btn.edit {
+            background: rgba(106, 17, 203, 0.1);
+            color: #a855f7;
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        .action-btn.delete {
+            background: rgba(240, 147, 251, 0.1);
+            color: #f472b6;
+            border-color: rgba(244, 114, 182, 0.3);
+        }
+
+        /* رسائل المساعدة */
+        .help-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            line-height: 1.5;
+            margin-top: 8px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border-right: 4px solid var(--gradient-3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* شارات الحالة للمستفيدين */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        .status-active {
+            background: var(--gradient-4);
+            color: white;
+        }
+
+        .status-suspended {
+            background: var(--gradient-2);
+            color: white;
+        }
+
+        /* كلاس جديد لأسماء المستفيدين */
+        .beneficiary-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            direction: rtl;
+            text-align: right;
+            flex: 1;
+            padding: 8px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* الحالة الفارغة */
+        .empty-state {
+            text-align: center;
+            padding: 30px 15px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.1);
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .empty-title {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--light);
+            font-weight: 700;
+        }
+
+        .empty-description {
+            font-size: 13px;
+            line-height: 1.5;
+            max-width: 300px;
+            margin: 0 auto;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* النوافذ المنبثقة */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 25px;
+            width: 100%;
+            max-width: 380px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+            border-radius: 25px 25px 0 0;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(60px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            color: var(--accent);
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 2px 8px rgba(0, 255, 157, 0.3);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--light);
+            font-size: 13px;
+            min-height: 100px;
+            resize: vertical;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 255, 157, 0.2);
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0 0 25px 25px;
+        }
+
+        /* زر الرجوع */
+        .back-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--light);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(-3px);
+        }
+
+        /* التنبيهات */
+        #alertBox {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 90%;
+            max-width: 320px;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 15px;
+            background: var(--card-bg);
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .alert.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .alert-success {
+            background: linear-gradient(145deg, #1a3a1a, #1e4e1e);
+        }
+
+        .alert-success::before {
+            background: var(--gradient-4);
+        }
+
+        .alert-error {
+            background: linear-gradient(145deg, #3a1a1a, #4e1e1e);
+        }
+
+        .alert-error::before {
+            background: var(--gradient-2);
+        }
+
+        /* قسم الإجراءات الخطرة */
+        .danger-section {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 2px solid rgba(240, 147, 251, 0.3);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .danger-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-2);
+        }
+
+        .danger-title {
+            color: #f472b6;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+            justify-content: center;
+            text-shadow: 0 2px 8px rgba(244, 114, 182, 0.5);
+        }
+
+        .danger-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* تخصيص للغة العربية */
+        [dir="rtl"] .input-icon {
+            right: auto;
+            left: 15px;
+        }
+
+        [dir="rtl"] input {
+            padding: 16px 15px 16px 45px;
+        }
+
+        [dir="rtl"] .side-badge {
+            right: auto;
+            left: 15px;
+        }
+
+        [dir="rtl"] .number-card::before {
+            right: auto;
+            left: 0;
+        }
+
+        [dir="rtl"] .number-notes-container {
+            border-right: none;
+            border-left: 4px solid var(--accent);
+        }
+
+        [dir="rtl"] .help-text {
+            border-right: none;
+            border-left: 4px solid var(--gradient-3);
+        }
+
+        [dir="rtl"] .back-btn:hover {
+            transform: translateX(3px);
+        }
+
+        /* تحسينات للأجهزة الصغيرة */
+        @media (max-width: 380px) {
+            body {
+                font-size: 13px;
+                padding: 8px;
+            }
+            
+            .auth-box,
+            .app-header,
+            .tabs-container,
+            .promo-code-section,
+            .use-promo-section,
+            .beneficiaries-section,
+            .promoter-numbers-section,
+            .number-card,
+            .stat-card,
+            .action-card {
+                padding: 12px;
+                border-radius: 18px;
+            }
+            
+            .user-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .code-display {
+                font-size: 1.6rem;
+                padding: 10px;
+                letter-spacing: 3px;
+            }
+            
+            .number-value {
+                font-size: 1.1rem;
+            }
+            
+            .btn {
+                padding: 14px 16px;
+                font-size: 13px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 12px;
+            }
+            
+            .modal-content {
+                max-width: 100%;
+                border-radius: 20px;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-row {
+                flex-direction: column;
+            }
+            
+            .side-badge {
+                padding: 6px 10px;
+                font-size: 11px;
+                max-width: 80px;
+            }
+        }
+
+        @media (min-width: 381px) and (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-row {
+                flex-direction: row;
+            }
+        }
+
+        @media (min-width: 481px) and (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            #appContent {
+                max-width: 700px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            body {
+                padding: 20px;
+            }
+            
+            #appContent {
+                max-width: 800px;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .actions-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شعار التطبيق -->
+    <div class="app-logo" id="appLogo">
+        <h1><i class="fas fa-network-wired"></i> نظام ترويج الأرقام</h1>
+        <p>شارك الأرقام وحصل على مستفيدين من حسابك</p>
+    </div>
+
+    <!-- قسم المصادقة -->
+    <div id="authSection" class="auth-container">
+        <!-- تسجيل الدخول -->
+        <div class="auth-box" id="loginBox">
+            <h2 class="auth-title"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</h2>
+            <form class="auth-form" id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="loginName" placeholder="اسم المستخدم" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="loginCode" placeholder="كود الدخول (6 أرقام)" maxlength="6" required inputmode="numeric">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> دخول
+                </button>
+            </form>
+            <div class="auth-footer">
+                <a class="auth-link" onclick="showRegister()">
+                    <i class="fas fa-user-plus"></i> إنشاء حساب جديد
+                </a>
+            </div>
+        </div>
+
+        <!-- التسجيل -->
+        <div class="auth-box" id="registerBox" style="display: none;">
+            <div class="modal-header" style="padding: 0; border: none;">
+                <button class="back-btn" onclick="showLogin()">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </button>
+            </div>
+            <h2 class="auth-title"><i class="fas fa-user-plus"></i> إنشاء حساب</h2>
+            <form class="auth-form" id="registerForm">
+                <div class="input-group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="registerName" placeholder="اسم المستخدم" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="loginPassword" placeholder="كود الدخول (6 أرقام)" maxlength="6" required inputmode="numeric">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="confirmLoginPassword" placeholder="تأكيد كود الدخول" maxlength="6" required inputmode="numeric">
+                </div>
+                <div class="help-text">
+                    <i class="fas fa-info-circle"></i> احفظ كود الدخول في مكان آمن
+                </div>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-user-plus"></i> إنشاء حساب
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- التطبيق الرئيسي -->
+    <div id="appContent" style="display: none;">
+        <!-- الهيدر -->
+        <div class="app-header">
+            <div class="header-top">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">مستخدم</div>
+                        <span class="role-badge" id="userRole">مالك الحساب</span>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="showConfirmLogoutModal()">
+                    <i class="fas fa-sign-out-alt"></i> خروج
+                </button>
+            </div>
+
+            <!-- الإحصائيات -->
+            <div class="stats-container" id="statsContainer">
+                <!-- سيتم ملؤها ديناميكياً -->
+            </div>
+        </div>
+
+        <!-- علامات التبويب -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('my')">
+                    <i class="fas fa-user-circle"></i> أرقامي
+                </div>
+                <div class="tab" onclick="switchTab('promo')">
+                    <i class="fas fa-users"></i> ترويجي
+                </div>
+                <div class="tab" onclick="switchTab('beneficiaries')" id="beneficiariesTab" style="display: none;">
+                    <i class="fas fa-user-friends"></i> المستفيدين
+                </div>
+            </div>
+        </div>
+
+        <!-- محتوى التطبيق -->
+        <div id="mainContent">
+            <!-- سيتم ملؤه ديناميكياً -->
+        </div>
+    </div>
+
+    <!-- النوافذ المنبثقة -->
+    <!-- نافذة إضافة رقم -->
+    <div id="numberModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="hideModal()">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </button>
+                <h3 class="modal-title"><i class="fas fa-plus-circle"></i> إضافة رقم</h3>
+                <div></div>
+            </div>
+            <div class="modal-body">
+                <form class="modal-form" onsubmit="saveNumber(); return false;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-phone"></i> رقم الهاتف
+                        </label>
+                        <input type="tel" id="phoneNumber" placeholder="أدخل رقم الهاتف" required inputmode="numeric">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-sticky-note"></i> ملاحظات
+                        </label>
+                        <textarea id="numberNotes" placeholder="ملاحظات حول الرقم..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="hideModal()">
+                            <i class="fas fa-times"></i> إلغاء
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> حفظ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة أرقام متعددة -->
+    <div id="multipleNumbersModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="hideMultipleModal()">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </button>
+                <h3 class="modal-title"><i class="fas fa-layer-group"></i> أرقام متعددة</h3>
+                <div></div>
+            </div>
+            <div class="modal-body">
+                <form class="modal-form" onsubmit="addMultipleNumbers(); return false;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-list-ol"></i> أدخل الأرقام
+                        </label>
+                        <textarea id="multipleNumbers" rows="6" 
+                            placeholder="أدخل الأرقام، سطر لكل رقم
+مثال:
+0512345678
+0559876543" required></textarea>
+                        <div class="help-text">
+                            سطر لكل رقم، يمكنك إضافة ملاحظات بعد -
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="hideMultipleModal()">
+                            <i class="fas fa-times"></i> إلغاء
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-plus-circle"></i> إضافة
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة استخدام كود ترويج -->
+    <div id="usePromoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="hideUsePromoModal()">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </button>
+                <h3 class="modal-title"><i class="fas fa-user-tag"></i> استخدام كود ترويج</h3>
+                <div></div>
+            </div>
+            <div class="modal-body">
+                <form class="modal-form" onsubmit="usePromoCode(); return false;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-key"></i> كود الترويج
+                        </label>
+                        <input type="text" id="promoCodeInput" placeholder="أدخل كود الترويج" maxlength="6" required inputmode="numeric">
+                        <div class="help-text">
+                            أدخل كود ترويج المروج الذي تريد أخذ أرقامه
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="hideUsePromoModal()">
+                            <i class="fas fa-times"></i> إلغاء
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-user-tag"></i> استخدام
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تغيير كود الترويج -->
+    <div id="changePromoCodeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="hideChangePromoCodeModal()">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </button>
+                <h3 class="modal-title"><i class="fas fa-key"></i> تغيير كود الترويج</h3>
+                <div></div>
+            </div>
+            <div class="modal-body">
+                <div class="help-text" style="margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle"></i> تحذير: تغيير كود الترويج سيجعل الكود القديم غير صالح وسيتم إزالة جميع المستفيدين الحاليين!
+                </div>
+                <form class="modal-form" onsubmit="confirmChangePromoCode(); return false;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-lock"></i> كود الدخول الحالي
+                        </label>
+                        <input type="password" id="currentLoginCode" placeholder="أدخل كود الدخول للتأكيد" maxlength="6" required inputmode="numeric">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="hideChangePromoCodeModal()">
+                            <i class="fas fa-times"></i> إلغاء
+                        </button>
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-key"></i> تغيير الكود
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إلغاء الاستفادة -->
+    <div id="cancelBeneficiaryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="hideCancelBeneficiaryModal()">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </button>
+                <h3 class="modal-title"><i class="fas fa-user-times"></i> إلغاء الاستفادة</h3>
+                <div></div>
+            </div>
+            <div class="modal-body">
+                <div class="help-text" style="margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle"></i> هل تريد إلغاء الاستفادة من أرقام المروج؟
+                </div>
+                <form class="modal-form" onsubmit="confirmCancelBeneficiary(); return false;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-lock"></i> كود الدخول للتأكيد
+                        </label>
+                        <input type="password" id="cancelLoginCode" placeholder="أدخل كود الدخول" maxlength="6" required inputmode="numeric">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="hideCancelBeneficiaryModal()">
+                            <i class="fas fa-times"></i> إلغاء
+                        </button>
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-user-times"></i> تأكيد الإلغاء
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تأكيد الحذف -->
+    <div id="confirmDeleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="hideConfirmDeleteModal()">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </button>
+                <h3 class="modal-title"><i class="fas fa-exclamation-triangle"></i> تأكيد الحذف</h3>
+                <div></div>
+            </div>
+            <div class="modal-body">
+                <div class="help-text" style="margin-bottom: 20px; text-align: center;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                    هل أنت متأكد من حذف هذا الرقم؟
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="hideConfirmDeleteModal()">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                    <button type="button" class="btn btn-success" id="confirmDeleteBtn">
+                        <i class="fas fa-trash"></i> تأكيد الحذف
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تأكيد تسجيل الخروج -->
+    <div id="confirmLogoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="hideConfirmLogoutModal()">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </button>
+                <h3 class="modal-title"><i class="fas fa-sign-out-alt"></i> تأكيد الخروج</h3>
+                <div></div>
+            </div>
+            <div class="modal-body">
+                <div class="help-text" style="margin-bottom: 20px; text-align: center;">
+                    <i class="fas fa-question-circle" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                    هل تريد تسجيل الخروج؟
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="hideConfirmLogoutModal()">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                    <button type="button" class="btn btn-success" id="confirmLogoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> تأكيد الخروج
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تأكيد حذف جميع الأرقام -->
+    <div id="confirmDeleteAllModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="hideConfirmDeleteAllModal()">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </button>
+                <h3 class="modal-title"><i class="fas fa-exclamation-triangle"></i> تأكيد حذف الكل</h3>
+                <div></div>
+            </div>
+            <div class="modal-body">
+                <div class="help-text" style="margin-bottom: 20px; text-align: center;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 10px; display: block; color: #f5576c;"></i>
+                    <h4 style="color: #f5576c; margin-bottom: 10px;">تحذير شديد الخطورة!</h4>
+                    <p>هذا الإجراء سيحذف <strong>جميع أرقامك</strong> بشكل دائم ولا يمكن التراجع عنه.</p>
+                    <p style="margin-top: 10px;">هل أنت متأكد تماماً من حذف جميع الأرقام؟</p>
+                </div>
+                <form class="modal-form" onsubmit="confirmDeleteAllNumbers(); return false;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-lock"></i> كود الدخول للتأكيد
+                        </label>
+                        <input type="password" id="deleteAllLoginCode" placeholder="أدخل كود الدخول للتأكيد" maxlength="6" required inputmode="numeric">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="hideConfirmDeleteAllModal()">
+                            <i class="fas fa-times"></i> إلغاء
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> حذف جميع الأرقام
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل رقم -->
+    <div id="editNumberModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="hideEditModal()">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </button>
+                <h3 class="modal-title"><i class="fas fa-edit"></i> تعديل رقم</h3>
+                <div></div>
+            </div>
+            <div class="modal-body">
+                <form class="modal-form" onsubmit="updateNumber(); return false;">
+                    <input type="hidden" id="editNumberId">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-phone"></i> رقم الهاتف
+                        </label>
+                        <input type="tel" id="editPhoneNumber" placeholder="أدخل رقم الهاتف" required inputmode="numeric">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-sticky-note"></i> ملاحظات
+                        </label>
+                        <textarea id="editNumberNotes" placeholder="ملاحظات حول الرقم..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="hideEditModal()">
+                            <i class="fas fa-times"></i> إلغاء
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> تحديث
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- تنبيهات -->
+    <div id="alertBox"></div>
+
+    <script>
+        // البيانات الأساسية
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem('numbers_users')) || [];
+        let numbers = JSON.parse(localStorage.getItem('numbers_data')) || [];
+        let beneficiaries = JSON.parse(localStorage.getItem('numbers_beneficiaries')) || [];
+        let currentTab = 'my';
+        let numberToDelete = null;
+        
+        // تهيئة التطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            // محاولة تسجيل الدخول التلقائي
+            const savedUser = localStorage.getItem('numbers_currentUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    showAppContent();
+                } catch (e) {
+                    localStorage.removeItem('numbers_currentUser');
+                }
+            }
+            
+            // إعداد النماذج
+            setupForms();
+            
+            // تحميل البيانات الأولية
+            loadInitialData();
+            
+            // إعداد أحداث النوافذ المنبثقة
+            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+                if (numberToDelete) {
+                    deleteNumberConfirmed(numberToDelete);
+                    hideConfirmDeleteModal();
+                }
+            });
+            
+            document.getElementById('confirmLogoutBtn').addEventListener('click', function() {
+                logoutConfirmed();
+                hideConfirmLogoutModal();
+            });
+        });
+        
+        function loadInitialData() {
+            if (users.length === 0) {
+                // بيانات تجريبية
+                const promoter = {
+                    id: 'promoter_1',
+                    name: 'مروج تجريبي',
+                    loginCode: '123456',
+                    promoCode: '654321',
+                    createdAt: new Date().toISOString(),
+                    role: 'promoter'
+                };
+                users.push(promoter);
+                
+                const beneficiary = {
+                    id: 'beneficiary_1',
+                    name: 'مستفيد تجريبي',
+                    loginCode: '111111',
+                    promoCode: '222222',
+                    createdAt: new Date().toISOString(),
+                    role: 'beneficiary',
+                    promoterId: 'promoter_1',
+                    takenNumbers: []
+                };
+                users.push(beneficiary);
+                
+                const demoNumbers = [
+                    {
+                        id: '1',
+                        userId: 'promoter_1',
+                        value: '0512345678',
+                        notes: 'عميل مهم',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        isTaken: false,
+                        takenBy: null,
+                        takenByName: null,
+                        takenByRole: null,
+                        takenAt: null
+                    },
+                    {
+                        id: '2',
+                        userId: 'promoter_1',
+                        value: '0559876543',
+                        notes: 'صديق',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        isTaken: false,
+                        takenBy: null,
+                        takenByName: null,
+                        takenByRole: null,
+                        takenAt: null
+                    }
+                ];
+                numbers.push(...demoNumbers);
+                
+                beneficiaries.push({
+                    id: 'beneficiary_1',
+                    name: 'مستفيد تجريبي',
+                    promoCode: '222222',
+                    promoterId: 'promoter_1',
+                    status: 'active',
+                    takenNumbers: [],
+                    createdAt: new Date().toISOString(),
+                    lastAccess: new Date().toISOString()
+                });
+                
+                saveAllData();
+            }
+        }
+        
+        function setupForms() {
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                login();
+            });
+            
+            document.getElementById('registerForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                register();
+            });
+        }
+        
+        // === وظائف المصادقة ===
+        
+        function showLogin() {
+            document.getElementById('loginBox').style.display = 'block';
+            document.getElementById('registerBox').style.display = 'none';
+        }
+        
+        function showRegister() {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('registerBox').style.display = 'block';
+        }
+        
+        function cleanCode(code) {
+            return String(code).replace(/\D/g, '');
+        }
+        
+        function login() {
+            const name = document.getElementById('loginName').value.trim();
+            const code = cleanCode(document.getElementById('loginCode').value);
+            
+            if (!name || !code) {
+                showAlert('يرجى إدخال جميع البيانات', 'error');
+                return;
+            }
+            
+            if (code.length !== 6) {
+                showAlert('كود الدخول يجب أن يكون 6 أرقام', 'error');
+                return;
+            }
+            
+            const user = users.find(u => u.name === name && u.loginCode === code);
+            
+            if (user) {
+                let role = 'owner';
+                if (user.role === 'promoter') role = 'promoter';
+                else if (user.role === 'beneficiary') role = 'beneficiary';
+                
+                currentUser = {
+                    ...user,
+                    role: role
+                };
+                localStorage.setItem('numbers_currentUser', JSON.stringify(currentUser));
+                showAppContent();
+                showAlert('مرحباً بعودتك!', 'success');
+            } else {
+                showAlert('اسم المستخدم أو كود الدخول غير صحيح', 'error');
+            }
+        }
+        
+        function register() {
+            const name = document.getElementById('registerName').value.trim();
+            const loginCode = cleanCode(document.getElementById('loginPassword').value);
+            const confirmCode = cleanCode(document.getElementById('confirmLoginPassword').value);
+            
+            if (!name || !loginCode || !confirmCode) {
+                showAlert('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+            
+            if (loginCode.length !== 6) {
+                showAlert('كود الدخول يجب أن يكون 6 أرقام', 'error');
+                return;
+            }
+            
+            if (loginCode !== confirmCode) {
+                showAlert('كود التأكيد غير متطابق', 'error');
+                return;
+            }
+            
+            if (users.some(u => u.name === name)) {
+                showAlert('اسم المستخدم موجود مسبقاً', 'error');
+                return;
+            }
+            
+            if (users.some(u => u.loginCode === loginCode)) {
+                showAlert('كود الدخول هذا مستخدم بالفعل', 'error');
+                return;
+            }
+            
+            let promoCode;
+            do {
+                promoCode = '';
+                for (let i = 0; i < 6; i++) {
+                    promoCode += Math.floor(Math.random() * 10);
+                }
+            } while (users.some(u => u.promoCode === promoCode));
+            
+            const newUser = {
+                id: 'user_' + Date.now(),
+                name: name,
+                loginCode: loginCode,
+                promoCode: promoCode,
+                createdAt: new Date().toISOString(),
+                role: 'promoter'
+            };
+            
+            users.push(newUser);
+            saveAllData();
+            
+            showAlert('تم إنشاء الحساب بنجاح! كود ترويجك: ' + promoCode, 'success');
+            showLogin();
+        }
+        
+        // === نوافذ تأكيد الخروج ===
+        function showConfirmLogoutModal() {
+            document.getElementById('confirmLogoutModal').style.display = 'flex';
+        }
+        
+        function hideConfirmLogoutModal() {
+            document.getElementById('confirmLogoutModal').style.display = 'none';
+        }
+        
+        function logoutConfirmed() {
+            currentUser = null;
+            localStorage.removeItem('numbers_currentUser');
+            
+            document.getElementById('appContent').style.display = 'none';
+            document.getElementById('authSection').style.display = 'flex';
+            document.getElementById('appLogo').style.display = 'block';
+            showLogin();
+            
+            document.getElementById('loginName').value = '';
+            document.getElementById('loginCode').value = '';
+            
+            showAlert('تم تسجيل الخروج بنجاح', 'success');
+        }
+        
+        // === نوافذ تأكيد الحذف ===
+        function showConfirmDeleteModal(numberId) {
+            numberToDelete = numberId;
+            document.getElementById('confirmDeleteModal').style.display = 'flex';
+        }
+        
+        function hideConfirmDeleteModal() {
+            document.getElementById('confirmDeleteModal').style.display = 'none';
+            numberToDelete = null;
+        }
+        
+        function deleteNumberConfirmed(id) {
+            const number = numbers.find(n => n.id === id);
+            if (!number) return;
+            
+            if (number.isTaken && number.takenByRole === 'beneficiary') {
+                // إزالة الرقم من قائمة المستفيد
+                beneficiaries.forEach(b => {
+                    if (b.takenNumbers && b.takenNumbers.includes(id)) {
+                        b.takenNumbers = b.takenNumbers.filter(numId => numId !== id);
+                    }
+                });
+            }
+            
+            numbers = numbers.filter(n => n.id !== id);
+            saveAllData();
+            loadContent();
+            showAlert('تم حذف الرقم', 'success');
+        }
+        
+        // === نوافذ تأكيد حذف جميع الأرقام ===
+        function showConfirmDeleteAllModal() {
+            document.getElementById('confirmDeleteAllModal').style.display = 'flex';
+        }
+        
+        function hideConfirmDeleteAllModal() {
+            document.getElementById('confirmDeleteAllModal').style.display = 'none';
+            document.getElementById('deleteAllLoginCode').value = '';
+        }
+        
+        function confirmDeleteAllNumbers() {
+            const loginCode = cleanCode(document.getElementById('deleteAllLoginCode').value);
+            
+            if (!loginCode || loginCode.length !== 6) {
+                showAlert('يرجى إدخال كود الدخول', 'error');
+                return;
+            }
+            
+            if (loginCode !== currentUser.loginCode) {
+                showAlert('كود الدخول غير صحيح', 'error');
+                return;
+            }
+            
+            // حذف جميع أرقام المستخدم
+            const initialCount = numbers.length;
+            numbers = numbers.filter(n => n.userId !== currentUser.id);
+            
+            // إزالة الأرقام من قوائم المستفيدين
+            beneficiaries.forEach(beneficiary => {
+                if (beneficiary.takenNumbers) {
+                    beneficiary.takenNumbers = beneficiary.takenNumbers.filter(numId => {
+                        const num = numbers.find(n => n.id === numId);
+                        return num !== undefined;
+                    });
+                }
+            });
+            
+            saveAllData();
+            hideConfirmDeleteAllModal();
+            
+            const deletedCount = initialCount - numbers.length;
+            showAlert(`تم حذف ${deletedCount} رقم${deletedCount !== 1 ? 'اً' : ''} بنجاح`, 'success');
+            
+            loadContent();
+        }
+        
+        // === حفظ البيانات ===
+        
+        function saveAllData() {
+            localStorage.setItem('numbers_users', JSON.stringify(users));
+            localStorage.setItem('numbers_data', JSON.stringify(numbers));
+            localStorage.setItem('numbers_beneficiaries', JSON.stringify(beneficiaries));
+        }
+        
+        // === دالة loadButtonStates ===
+        function loadButtonStates() {
+            document.querySelectorAll('.action-btn.copy').forEach(button => {
+                const card = button.closest('.number-card');
+                if (card) {
+                    const numberId = card.dataset.id;
+                    const number = numbers.find(n => n.id === numberId);
+                    
+                    if (number && number.isTaken) {
+                        if (number.takenByRole === 'beneficiary') {
+                            button.innerHTML = '<i class="fas fa-user-check"></i> مأخوذ';
+                            button.classList.add('taken-by-beneficiary');
+                            button.disabled = true;
+                            button.onclick = function() { 
+                                showAlert('هذا الرقم مأخوذ من قبل مستفيد', 'info'); 
+                            };
+                        } else if (number.takenBy === currentUser.id) {
+                            button.innerHTML = '<i class="fas fa-check-circle"></i> تم النسخ';
+                            button.classList.add('copied');
+                            button.disabled = true;
+                            button.onclick = function() { 
+                                showAlert('لقد نسخت هذا الرقم مسبقاً', 'info'); 
+                            };
+                        }
+                    }
+                }
+            });
+        }
+        
+        // === عرض المحتوى الرئيسي ===
+        
+        function showAppContent() {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('appContent').style.display = 'flex';
+            document.getElementById('appLogo').style.display = 'none';
+            
+            updateUserInfo();
+            loadContent();
+        }
+        
+        function updateUserInfo() {
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            
+            const roleBadge = document.getElementById('userRole');
+            const beneficiariesTab = document.getElementById('beneficiariesTab');
+            
+            if (currentUser.role === 'promoter') {
+                roleBadge.textContent = 'مروج';
+                roleBadge.className = 'role-badge role-promoter';
+                beneficiariesTab.style.display = 'flex';
+            } else if (currentUser.role === 'beneficiary') {
+                roleBadge.textContent = 'مستفيد';
+                roleBadge.className = 'role-badge role-beneficiary';
+                beneficiariesTab.style.display = 'none';
+            } else {
+                roleBadge.textContent = 'مالك';
+                roleBadge.className = 'role-badge role-owner';
+                beneficiariesTab.style.display = 'none';
+            }
+        }
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'my') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+            } else if (tab === 'promo') {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+            } else if (tab === 'beneficiaries') {
+                document.querySelector('.tab:nth-child(3)').classList.add('active');
+            }
+            
+            loadContent();
+        }
+        
+        function loadContent() {
+            const mainContent = document.getElementById('mainContent');
+            
+            switch(currentTab) {
+                case 'my':
+                    mainContent.innerHTML = createMyNumbersContent();
+                    setTimeout(() => loadButtonStates(), 200);
+                    break;
+                case 'promo':
+                    mainContent.innerHTML = createPromoContent();
+                    setTimeout(() => loadButtonStates(), 200);
+                    break;
+                case 'beneficiaries':
+                    mainContent.innerHTML = createBeneficiariesContent();
+                    break;
+            }
+            
+            updateStats();
+        }
+        
+        function createMyNumbersContent() {
+            let myNumbers = [];
+            
+            if (currentUser.role === 'promoter' || currentUser.role === 'owner') {
+                myNumbers = numbers.filter(n => n.userId === currentUser.id);
+                myNumbers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            } else if (currentUser.role === 'beneficiary') {
+                let beneficiaryInfo = null;
+                if (currentUser.promoterId) {
+                    beneficiaryInfo = beneficiaries.find(b => 
+                        b.name === currentUser.name && 
+                        b.promoterId === currentUser.promoterId
+                    );
+                }
+                
+                const isSuspended = beneficiaryInfo && beneficiaryInfo.status === 'suspended';
+                
+                if (isSuspended) {
+                    myNumbers = numbers.filter(n => n.userId === currentUser.id);
+                    myNumbers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                } else {
+                    myNumbers = [];
+                }
+            }
+            
+            if (currentUser.role === 'beneficiary' && myNumbers.length > 0) {
+                const beneficiaryInfo = beneficiaries.find(b => 
+                    b.name === currentUser.name && 
+                    b.promoterId === currentUser.promoterId
+                );
+                
+                if (beneficiaryInfo && beneficiaryInfo.status === 'suspended') {
+                    let content = `
+                        <div class="promo-code-section" style="margin-bottom: 20px; background: rgba(245, 87, 108, 0.1); border: 2px solid rgba(245, 87, 108, 0.3);">
+                            <div class="section-title" style="color: #f5576c;">
+                                <i class="fas fa-user-slash"></i> حالة حسابك: معطل
+                            </div>
+                            <div class="help-text" style="color: rgba(255, 255, 255, 0.9);">
+                                <i class="fas fa-info-circle"></i> حسابك معطل من قبل المروج. 
+                                <strong>يمكنك الآن استخدام أرقامك الخاصة كمروج عادي.</strong>
+                                <br><br>
+                                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin-top: 10px;">
+                                    <strong>ملاحظة هامة:</strong><br>
+                                    أثناء تعليقك، يمكنك استخدام أرقامك الخاصة كـ مروج عادي. 
+                                    عندما يقوم المروج بتفعيل حسابك، ستعود لتصبح مستفيداً منه وسيتم إخفاء أرقامك.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="actions-grid">
+                            <div class="action-card" onclick="showAddModal()">
+                                <div class="action-icon"><i class="fas fa-plus-circle"></i></div>
+                                <h4 class="action-title">إضافة رقم</h4>
+                                <p class="action-desc">إضافة رقم خاص بك</p>
+                            </div>
+                            <div class="action-card" onclick="showMultipleModal()">
+                                <div class="action-icon"><i class="fas fa-layer-group"></i></div>
+                                <h4 class="action-title">أرقام متعددة</h4>
+                                <p class="action-desc">إضافة عدة أرقام</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    content += `
+                        <div class="numbers-container" style="margin-top: 20px;">
+                            ${myNumbers.map(number => {
+                                const isTaken = number.isTaken;
+                                const takenByRole = number.takenByRole;
+                                
+                                let sideBadge = '';
+                                if (isTaken) {
+                                    if (takenByRole === 'beneficiary') {
+                                        sideBadge = `
+                                            <div class="side-badge taken-by-beneficiary">
+                                                <i class="fas fa-user-check"></i>
+                                                <span>مأخوذ</span>
+                                            </div>
+                                        `;
+                                    } else {
+                                        sideBadge = `
+                                            <div class="side-badge taken-by-promoter">
+                                                <i class="fas fa-copy"></i>
+                                                <span>تم النسخ</span>
+                                            </div>
+                                        `;
+                                    }
+                                }
+                                
+                                let buttonText = 'نسخ';
+                                let buttonClass = 'copy';
+                                let buttonDisabled = '';
+                                let buttonOnClick = `copyNumber('${number.value}', '${number.id}', this)`;
+                                
+                                if (isTaken) {
+                                    if (takenByRole === 'beneficiary') {
+                                        buttonText = 'مأخوذ';
+                                        buttonClass = 'copy taken-by-beneficiary';
+                                        buttonDisabled = 'disabled';
+                                        buttonOnClick = `showAlert('هذا الرقم مأخوذ من قبل مستفيد', 'info')`;
+                                    } else {
+                                        buttonText = 'تم النسخ';
+                                        buttonClass = 'copy copied';
+                                        buttonDisabled = 'disabled';
+                                        buttonOnClick = `showAlert('لقد نسخت هذا الرقم مسبقاً', 'info')`;
+                                    }
+                                }
+                                
+                                return `
+                                    <div class="number-card" data-id="${number.id}">
+                                        ${sideBadge}
+                                        <div class="number-header">
+                                            <div class="number-value">${formatPhoneNumber(number.value)}</div>
+                                            <span class="number-type type-owner">
+                                                رقـمي
+                                            </span>
+                                        </div>
+                                        <div class="number-info">
+                                            <div class="info-item">
+                                                <i class="fas fa-calendar"></i>
+                                                <span>${formatDate(number.createdAt)}</span>
+                                            </div>
+                                            ${number.notes ? `
+                                            <div class="number-notes-container">
+                                                <div class="number-notes-title">
+                                                    <i class="fas fa-sticky-note"></i>
+                                                    <span>ملاحظات:</span>
+                                                </div>
+                                                <div class="number-notes">${number.notes}</div>
+                                            </div>
+                                            ` : ''}
+                                        </div>
+                                        <div class="number-actions">
+                                            <div class="action-row">
+                                                <button class="action-btn ${buttonClass}" 
+                                                    onclick="${buttonOnClick}"
+                                                    ${buttonDisabled}>
+                                                    <i class="fas ${isTaken ? (takenByRole === 'beneficiary' ? 'fa-user-check' : 'fa-check-circle') : 'fa-copy'}"></i>
+                                                    ${buttonText}
+                                                </button>
+                                            </div>
+                                            <div class="action-row">
+                                                <button class="action-btn delete" onclick="showConfirmDeleteModal('${number.id}')">
+                                                    <i class="fas fa-trash"></i> حذف
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        
+                        ${createDangerSection()}
+                    `;
+                    
+                    return content;
+                }
+            }
+            
+            if (myNumbers.length === 0 && currentUser.role !== 'beneficiary') {
+                return `
+                    <div class="empty-state">
+                        <i class="fas fa-phone-slash empty-icon"></i>
+                        <h3 class="empty-title">لا توجد أرقام</h3>
+                        <p class="empty-description">ابدأ بإضافة أرقام لتشاركها</p>
+                        <div class="actions-grid">
+                            <div class="action-card" onclick="showAddModal()">
+                                <div class="action-icon"><i class="fas fa-plus-circle"></i></div>
+                                <h4 class="action-title">إضافة رقم</h4>
+                                <p class="action-desc">إضافة رقم واحد</p>
+                            </div>
+                            <div class="action-card" onclick="showMultipleModal()">
+                                <div class="action-icon"><i class="fas fa-layer-group"></i></div>
+                                <h4 class="action-title">أرقام متعددة</h4>
+                                <p class="action-desc">إضافة عدة أرقام</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (currentUser.role === 'beneficiary' && myNumbers.length === 0) {
+                return `
+                    <div class="empty-state">
+                        <i class="fas fa-user-tag empty-icon"></i>
+                        <h3 class="empty-title">أنت مستفيد</h3>
+                        <p class="empty-description">اذهب إلى علامة تبويب "ترويجي" لترى أرقام المروج</p>
+                        <button class="btn btn-promoter" onclick="switchTab('promo')" style="margin-top: 20px;">
+                            <i class="fas fa-users"></i> الانتقال إلى ترويجي
+                        </button>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="actions-grid">
+                    <div class="action-card" onclick="showAddModal()">
+                        <div class="action-icon"><i class="fas fa-plus-circle"></i></div>
+                        <h4 class="action-title">إضافة رقم</h4>
+                        <p class="action-desc">إضافة رقم واحد</p>
+                    </div>
+                    <div class="action-card" onclick="showMultipleModal()">
+                        <div class="action-icon"><i class="fas fa-layer-group"></i></div>
+                        <h4 class="action-title">أرقام متعددة</h4>
+                        <p class="action-desc">إضافة عدة أرقام</p>
+                    </div>
+                </div>
+                
+                <div class="numbers-container">
+                    ${myNumbers.map(number => {
+                        const isTaken = number.isTaken;
+                        const takenByRole = number.takenByRole;
+                        
+                        let sideBadge = '';
+                        if (isTaken) {
+                            if (takenByRole === 'beneficiary') {
+                                sideBadge = `
+                                    <div class="side-badge taken-by-beneficiary">
+                                        <i class="fas fa-user-check"></i>
+                                        <span>مأخوذ</span>
+                                    </div>
+                                `;
+                            } else {
+                                sideBadge = `
+                                    <div class="side-badge taken-by-promoter">
+                                        <i class="fas fa-copy"></i>
+                                        <span>تم النسخ</span>
+                                    </div>
+                                `;
+                            }
+                        }
+                        
+                        let buttonText = 'نسخ';
+                        let buttonClass = 'copy';
+                        let buttonDisabled = '';
+                        let buttonOnClick = `copyNumber('${number.value}', '${number.id}', this)`;
+                        
+                        if (isTaken) {
+                            if (takenByRole === 'beneficiary') {
+                                buttonText = 'مأخوذ';
+                                buttonClass = 'copy taken-by-beneficiary';
+                                buttonDisabled = 'disabled';
+                                buttonOnClick = `showAlert('هذا الرقم مأخوذ من قبل مستفيد', 'info')`;
+                            } else {
+                                buttonText = 'تم النسخ';
+                                buttonClass = 'copy copied';
+                                buttonDisabled = 'disabled';
+                                buttonOnClick = `showAlert('لقد نسخت هذا الرقم مسبقاً', 'info')`;
+                            }
+                        }
+                        
+                        let actionButtons = '';
+                        if (currentUser.role === 'owner') {
+                            actionButtons = `
+                                <div class="action-row">
+                                    <button class="action-btn ${buttonClass}" 
+                                        onclick="${buttonOnClick}"
+                                        ${buttonDisabled}>
+                                        <i class="fas ${isTaken ? (takenByRole === 'beneficiary' ? 'fa-user-check' : 'fa-check-circle') : 'fa-copy'}"></i>
+                                        ${buttonText}
+                                    </button>
+                                    <button class="action-btn edit" onclick="editNumber('${number.id}')" ${isTaken && takenByRole === 'beneficiary' ? 'disabled' : ''}>
+                                        <i class="fas fa-edit"></i> تعديل
+                                    </button>
+                                </div>
+                                <div class="action-row">
+                                    <button class="action-btn delete" onclick="showConfirmDeleteModal('${number.id}')">
+                                        <i class="fas fa-trash"></i> حذف
+                                    </button>
+                                </div>
+                            `;
+                        } else {
+                            actionButtons = `
+                                <div class="action-row">
+                                    <button class="action-btn ${buttonClass}" 
+                                        onclick="${buttonOnClick}"
+                                        ${buttonDisabled}>
+                                        <i class="fas ${isTaken ? (takenByRole === 'beneficiary' ? 'fa-user-check' : 'fa-check-circle') : 'fa-copy'}"></i>
+                                        ${buttonText}
+                                    </button>
+                                </div>
+                                <div class="action-row">
+                                    <button class="action-btn delete" onclick="showConfirmDeleteModal('${number.id}')">
+                                        <i class="fas fa-trash"></i> حذف
+                                    </button>
+                                </div>
+                            `;
+                        }
+                        
+                        return `
+                            <div class="number-card" data-id="${number.id}">
+                                ${sideBadge}
+                                <div class="number-header">
+                                    <div class="number-value">${formatPhoneNumber(number.value)}</div>
+                                    <span class="number-type type-owner">
+                                        رقـمي
+                                    </span>
+                                </div>
+                                <div class="number-info">
+                                    <div class="info-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>${formatDate(number.createdAt)}</span>
+                                    </div>
+                                    ${number.notes ? `
+                                    <div class="number-notes-container">
+                                        <div class="number-notes-title">
+                                            <i class="fas fa-sticky-note"></i>
+                                            <span>ملاحظات:</span>
+                                        </div>
+                                        <div class="number-notes">${number.notes}</div>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                                <div class="number-actions">
+                                    ${actionButtons}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                
+                ${createDangerSection()}
+            `;
+        }
+        
+        function createPromoContent() {
+            const user = users.find(u => u.id === currentUser.id);
+            const promoCode = user ? user.promoCode : '---';
+            
+            let promoterNumbers = [];
+            let promoterInfo = '';
+            let isBeneficiarySuspended = false;
+            
+            if (currentUser.role === 'beneficiary' && currentUser.promoterId) {
+                const promoter = users.find(u => u.id === currentUser.promoterId);
+                promoterNumbers = numbers.filter(n => n.userId === currentUser.promoterId);
+                promoterInfo = promoter ? promoter.name : 'مروج';
+                
+                const beneficiaryInfo = beneficiaries.find(b => 
+                    b.name === currentUser.name && 
+                    b.promoterId === currentUser.promoterId
+                );
+                
+                if (beneficiaryInfo && beneficiaryInfo.status === 'suspended') {
+                    isBeneficiarySuspended = true;
+                }
+            }
+            
+            const beneficiaryInfo = beneficiaries.find(b => 
+                b.name === currentUser.name && 
+                b.promoterId === currentUser.promoterId
+            );
+            const takenNumbers = beneficiaryInfo ? (beneficiaryInfo.takenNumbers || []) : [];
+            
+            if (currentUser.role === 'beneficiary' && isBeneficiarySuspended) {
+                return `
+                    <div class="promo-code-section" style="text-align: center; padding: 30px 20px;">
+                        <div class="empty-icon" style="font-size: 3rem; color: #f5576c; margin-bottom: 20px;">
+                            <i class="fas fa-user-slash"></i>
+                        </div>
+                        <h3 class="empty-title" style="color: #f5576c;">تم تعليقك من المروج: ${promoterInfo}</h3>
+                        <p class="empty-description">
+                            لقد قام المروج بتعليق حسابك مؤقتاً.<br>
+                            لا يمكنك الوصول إلى أرقامه حتى يقوم بتفعيل حسابك مرة أخرى.
+                        </p>
+                        <div style="margin-top: 25px; padding: 20px; background: rgba(245, 87, 108, 0.1); border-radius: 15px; border: 2px solid rgba(245, 87, 108, 0.3);">
+                            <h4 style="color: #f5576c; margin-bottom: 10px;">
+                                <i class="fas fa-exclamation-triangle"></i> الحلول المتاحة:
+                            </h4>
+                            <div style="text-align: right; font-size: 14px; color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+                                1. انتظر حتى يقوم المروج بتفعيل حسابك<br>
+                                2. يمكنك استخدام <strong>"أرقامي"</strong> كـ مروج عادي<br>
+                                3. قم بـ <strong>"إلغاء الاستفادة"</strong> للعودة كمروج دائم
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="use-promo-section" style="margin-top: 15px;">
+                        <div class="section-title">
+                            <i class="fas fa-user-times"></i> إلغاء الاستفادة
+                        </div>
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i> يمكنك إلغاء الاستفادة من أرقام المروج والعودة كمروج دائم
+                        </div>
+                        <button class="btn btn-danger" onclick="showCancelBeneficiaryModal()" style="margin-top: 15px;">
+                            <i class="fas fa-user-times"></i> إلغاء الاستفادة
+                        </button>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="promo-code-section" id="promoCodeSection">
+                    <div class="section-title">
+                        <i class="fas fa-key"></i> ${currentUser.role === 'beneficiary' ? 'أنت مستفيد' : 'كود الترويج الخاص بك'}
+                    </div>
+                    
+                    ${currentUser.role === 'promoter' ? `
+                    <div class="code-frame-container" id="codeFrameContainer">
+                        <button class="small-change-btn" onclick="showChangePromoCodeModal()">
+                            <i class="fas fa-redo"></i> تغيير
+                        </button>
+                        <div class="code-display" id="promoCodeDisplay">${promoCode}</div>
+                    </div>
+                    <div class="code-actions">
+                        <button class="btn btn-small btn-primary" onclick="copyPromoCode()">
+                            <i class="fas fa-copy"></i> نسخ الكود
+                        </button>
+                        <button class="btn btn-small btn-success" onclick="sharePromoViaWhatsApp()">
+                            <i class="fab fa-whatsapp"></i> مشاركة
+                        </button>
+                    </div>
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i> شارك هذا الكود مع الآخرين ليصبحوا مستفيدين من أرقامك
+                    </div>
+                    ` : `
+                    <div class="code-frame-container">
+                        <div class="code-display">${currentUser.promoCode || '---'}</div>
+                    </div>
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i> كود الترويج الذي استخدمته للدخول
+                    </div>
+                    `}
+                </div>
+                
+                ${currentUser.role === 'beneficiary' ? `
+                    ${currentUser.promoterId ? `
+                    <div class="promoter-numbers-section">
+                        <div class="section-title">
+                            <i class="fas fa-users"></i> أرقام المروج: ${promoterInfo}
+                            <span class="badge" style="background: var(--accent); padding: 4px 8px; border-radius: 10px; font-size: 11px;">
+                                ${promoterNumbers.length} رقم
+                            </span>
+                        </div>
+                        ${promoterNumbers.length === 0 ? `
+                            <div class="empty-state" style="padding: 15px;">
+                                <i class="fas fa-phone-slash" style="font-size: 2rem; color: rgba(255,255,255,0.2);"></i>
+                                <h3 style="font-size: 0.9rem; margin: 10px 0;">لا توجد أرقام</h3>
+                                <p style="font-size: 12px; color: rgba(255,255,255,0.6);">لم يضيف المروج أرقاماً بعد</p>
+                            </div>
+                        ` : `
+                            <div class="numbers-container">
+                                ${promoterNumbers.map(number => {
+                                    const isTaken = takenNumbers.includes(number.id);
+                                    const isTakenByOthers = number.isTaken && number.takenBy !== currentUser.id;
+                                    
+                                    let buttonText = 'نسخ';
+                                    let buttonClass = 'copy';
+                                    let buttonDisabled = '';
+                                    let buttonOnClick = `copyNumber('${number.value}', '${number.id}', this)`;
+                                    
+                                    if (isTaken) {
+                                        if (isTakenByOthers) {
+                                            buttonText = 'مأخوذ';
+                                            buttonClass = 'copy taken-by-beneficiary';
+                                            buttonDisabled = 'disabled';
+                                            buttonOnClick = `showAlert('هذا الرقم مأخوذ من قبل مستفيد آخر', 'error')`;
+                                        } else {
+                                            buttonText = 'تم النسخ';
+                                            buttonClass = 'copy copied';
+                                            buttonDisabled = 'disabled';
+                                            buttonOnClick = `showAlert('لقد نسخت هذا الرقم مسبقاً', 'info')`;
+                                        }
+                                    }
+                                    
+                                    const shortNotes = number.notes && number.notes.length > 50 ? 
+                                        number.notes.substring(0, 47) + '...' : 
+                                        number.notes;
+                                    
+                                    let sideBadge = '';
+                                    if (isTaken) {
+                                        if (isTakenByOthers) {
+                                            sideBadge = `
+                                                <div class="side-badge taken-by-beneficiary">
+                                                    <i class="fas fa-lock"></i>
+                                                    <span>مأخوذ</span>
+                                                </div>
+                                            `;
+                                        } else {
+                                            sideBadge = `
+                                                <div class="side-badge taken-by-promoter">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>تم النسخ</span>
+                                                </div>
+                                            `;
+                                        }
+                                    }
+                                    
+                                    return `
+                                        <div class="number-card" data-id="${number.id}">
+                                            ${sideBadge}
+                                            <div class="number-header">
+                                                <div class="number-value">${formatPhoneNumber(number.value)}</div>
+                                                <span class="number-type type-promoter">
+                                                    من المروج
+                                                </span>
+                                            </div>
+                                            <div class="number-info">
+                                                <div class="info-item">
+                                                    <i class="fas fa-calendar"></i>
+                                                    <span>${formatDate(number.createdAt)}</span>
+                                                </div>
+                                                ${number.notes ? `
+                                                <div class="number-notes-container">
+                                                    <div class="number-notes-title">
+                                                        <i class="fas fa-sticky-note"></i>
+                                                        <span>ملاحظات المروج:</span>
+                                                    </div>
+                                                    <div class="number-notes">${shortNotes}</div>
+                                                </div>
+                                                ` : ''}
+                                            </div>
+                                            <div class="number-actions">
+                                                <div class="action-row">
+                                                    <button class="action-btn ${buttonClass}" 
+                                                        onclick="${buttonOnClick}"
+                                                        ${buttonDisabled}>
+                                                        <i class="fas ${isTaken ? 'fa-check-circle' : 'fa-copy'}"></i>
+                                                        ${buttonText}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `}
+                    </div>
+                    ` : ''}
+                    
+                    <div class="use-promo-section">
+                        <div class="section-title">
+                            <i class="fas fa-user-times"></i> إلغاء الاستفادة
+                        </div>
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i> يمكنك إلغاء الاستفادة من أرقام المروج والعودة كمروج
+                        </div>
+                        <button class="btn btn-danger" onclick="showCancelBeneficiaryModal()" style="margin-top: 15px;">
+                            <i class="fas fa-user-times"></i> إلغاء الاستفادة
+                        </button>
+                    </div>
+                ` : `
+                    <div class="use-promo-section">
+                        <div class="section-title">
+                            <i class="fas fa-user-tag"></i> استخدام كود ترويج
+                        </div>
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i> أدخل كود ترويج مروج آخر لتكون مستفيداً من أرقامه
+                        </div>
+                        <button class="btn btn-success" onclick="showUsePromoModal()" style="margin-top: 15px;">
+                            <i class="fas fa-user-tag"></i> استخدام كود ترويج
+                        </button>
+                    </div>
+                `}
+            `;
+        }
+        
+        function createBeneficiariesContent() {
+            if (currentUser.role !== 'promoter') {
+                return `
+                    <div class="empty-state">
+                        <i class="fas fa-lock empty-icon"></i>
+                        <h3 class="empty-title">غير مصرح</h3>
+                        <p class="empty-description">هذه الصفحة متاحة فقط للمروجين</p>
+                    </div>
+                `;
+            }
+            
+            const myBeneficiaries = beneficiaries.filter(b => b.promoterId === currentUser.id);
+            
+            if (myBeneficiaries.length === 0) {
+                return `
+                    <div class="empty-state">
+                        <i class="fas fa-user-friends empty-icon"></i>
+                        <h3 class="empty-title">لا يوجد مستفيدين</h3>
+                        <p class="empty-description">شارك كود الترويج الخاص بك للحصول على مستفيدين</p>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="promo-code-section">
+                    <div class="section-title">
+                        <i class="fas fa-users"></i> إدارة المستفيدين (${myBeneficiaries.length})
+                    </div>
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i> يمكنك إيقاف أو حذف أي مستفيد
+                    </div>
+                </div>
+                
+                <div class="beneficiaries-section">
+                    <div class="beneficiaries-grid">
+                        ${myBeneficiaries.map(beneficiary => {
+                            const numbersTaken = beneficiary.takenNumbers ? beneficiary.takenNumbers.length : 0;
+                            const promoterNumbers = numbers.filter(n => n.userId === currentUser.id).length;
+                            const lastAccess = beneficiary.lastAccess ? formatDate(beneficiary.lastAccess) : 'لم يدخل';
+                            
+                            const takenFromPromoter = numbers.filter(n => 
+                                n.userId === currentUser.id && 
+                                n.isTaken && 
+                                n.takenByName === beneficiary.name
+                            ).length;
+                            
+                            let statusBadge = '';
+                            if (beneficiary.status === 'active') {
+                                statusBadge = '<span class="status-badge status-active">نشط</span>';
+                            } else {
+                                statusBadge = '<span class="status-badge status-suspended">موقوف</span>';
+                            }
+                            
+                            const takenBadge = takenFromPromoter > 0 ? `
+                                <div class="side-badge taken-from-promoter">
+                                    <i class="fas fa-user-check"></i>
+                                    <span>${takenFromPromoter} مأخوذ</span>
+                                </div>
+                            ` : '';
+                            
+                            return `
+                                <div class="number-card">
+                                    ${takenBadge}
+                                    <div class="number-header">
+                                        <div class="beneficiary-name">
+                                            ${beneficiary.name}
+                                        </div>
+                                        ${statusBadge}
+                                    </div>
+                                    <div class="beneficiary-stats" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0;">
+                                        <div class="stat-item" style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px;">
+                                            <div class="stat-number">${numbersTaken}</div>
+                                            <div class="stat-label-small">مأخوذة</div>
+                                        </div>
+                                        <div class="stat-item" style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px;">
+                                            <div class="stat-number">${takenFromPromoter}</div>
+                                            <div class="stat-label-small">من مروج</div>
+                                        </div>
+                                        <div class="stat-item" style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px;">
+                                            <div class="stat-number">${lastAccess}</div>
+                                            <div class="stat-label-small">آخر دخول</div>
+                                        </div>
+                                    </div>
+                                    <div class="beneficiary-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 15px;">
+                                        <button class="btn btn-small ${beneficiary.status === 'active' ? 'btn-warning' : 'btn-success'}" onclick="toggleBeneficiaryStatus('${beneficiary.id}')">
+                                            <i class="fas ${beneficiary.status === 'active' ? 'fa-pause' : 'fa-play'}"></i>
+                                            ${beneficiary.status === 'active' ? 'تعليق' : 'تفعيل'}
+                                        </button>
+                                        <button class="btn btn-small btn-danger" onclick="deleteBeneficiary('${beneficiary.id}')">
+                                            <i class="fas fa-trash"></i> حذف
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function createDangerSection() {
+            return `
+                <div class="danger-section">
+                    <h3 class="danger-title">
+                        <i class="fas fa-exclamation-triangle"></i> إجراءات خطرة
+                    </h3>
+                    <div class="danger-actions">
+                        <button class="btn btn-danger" onclick="showConfirmDeleteAllModal()">
+                            <i class="fas fa-trash"></i> حذف جميع الأرقام
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function updateStats() {
+            const statsContainer = document.getElementById('statsContainer');
+            
+            if (currentUser.role === 'promoter') {
+                const myNumbers = numbers.filter(n => n.userId === currentUser.id);
+                const myBeneficiaries = beneficiaries.filter(b => b.promoterId === currentUser.id);
+                const totalTaken = myNumbers.filter(n => n.isTaken).length;
+                const remaining = myNumbers.length - totalTaken;
+                
+                statsContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${myNumbers.length}</div>
+                        <div class="stat-label">إجمالي الأرقام</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${totalTaken}</div>
+                        <div class="stat-label">تم أخذها</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${remaining}</div>
+                        <div class="stat-label">متبقي</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${myBeneficiaries.length}</div>
+                        <div class="stat-label">مستفيدين</div>
+                    </div>
+                `;
+            } else if (currentUser.role === 'beneficiary') {
+                const promoterNumbers = numbers.filter(n => n.userId === currentUser.promoterId);
+                const beneficiaryInfo = beneficiaries.find(b => 
+                    b.name === currentUser.name && 
+                    b.promoterId === currentUser.promoterId
+                );
+                
+                const myTakenNumbers = beneficiaryInfo ? (beneficiaryInfo.takenNumbers ? beneficiaryInfo.takenNumbers.length : 0) : 0;
+                const totalPromoterNumbers = promoterNumbers.length;
+                const availableNumbers = promoterNumbers.filter(n => !n.isTaken || (n.isTaken && n.takenBy === currentUser.id)).length;
+                const promoter = users.find(u => u.id === currentUser.promoterId);
+                
+                const isSuspended = beneficiaryInfo && beneficiaryInfo.status === 'suspended';
+                
+                let promoterName = '---';
+                if (promoter) {
+                    if (promoter.name.length > 15) {
+                        promoterName = promoter.name.substring(0, 12) + '...';
+                    } else {
+                        promoterName = promoter.name;
+                    }
+                }
+                
+                if (isSuspended) {
+                    statsContainer.innerHTML = `
+                        <div class="stat-card" style="background: linear-gradient(145deg, #3a1a1a, #4e1e1e);">
+                            <div class="stat-value" style="color: #f5576c;">
+                                <i class="fas fa-user-slash"></i>
+                            </div>
+                            <div class="stat-label">حسابك معطل</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${promoterName}</div>
+                            <div class="stat-label">المروج</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${myTakenNumbers}</div>
+                            <div class="stat-label">مأخوذ سابقاً</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">مروج</div>
+                            <div class="stat-label">حساب بديل</div>
+                        </div>
+                    `;
+                } else {
+                    statsContainer.innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-value">${availableNumbers}</div>
+                            <div class="stat-label">متوفر لي</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${myTakenNumbers}</div>
+                            <div class="stat-label">مأخوذ</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${totalPromoterNumbers}</div>
+                            <div class="stat-label">إجمالي المروج</div>
+                        </div>
+                        <div class="stat-card" title="${promoter ? promoter.name : '---'}">
+                            <div class="stat-value">${promoterName}</div>
+                            <div class="stat-label">المروج</div>
+                        </div>
+                    `;
+                }
+            } else {
+                const myNumbers = numbers.filter(n => n.userId === currentUser.id);
+                const totalTaken = myNumbers.filter(n => n.isTaken).length;
+                const remaining = myNumbers.length - totalTaken;
+                
+                statsContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${myNumbers.length}</div>
+                        <div class="stat-label">إجمالي الأرقام</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${totalTaken}</div>
+                        <div class="stat-label">تم أخذها</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${remaining}</div>
+                        <div class="stat-label">متبقي</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">مالك</div>
+                        <div class="stat-label">الدور</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // === إدارة الأرقام ===
+        
+        function showAddModal() {
+            if (currentUser.role !== 'promoter' && currentUser.role !== 'owner' && currentUser.role !== 'beneficiary') {
+                showAlert('هذه الميزة متاحة فقط للمستخدمين النشطين', 'error');
+                return;
+            }
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('numberNotes').value = '';
+            document.getElementById('numberModal').style.display = 'flex';
+        }
+        
+        function hideModal() {
+            document.getElementById('numberModal').style.display = 'none';
+        }
+        
+        function saveNumber() {
+            const value = cleanCode(document.getElementById('phoneNumber').value);
+            const notes = document.getElementById('numberNotes').value.trim();
+            
+            if (value.length < 5) {
+                showAlert('رقم الهاتف قصير جداً', 'error');
+                return;
+            }
+            
+            let userIdToUse = currentUser.id;
+            
+            if (currentUser.role === 'beneficiary') {
+                const beneficiaryInfo = beneficiaries.find(b => 
+                    b.name === currentUser.name && 
+                    b.promoterId === currentUser.promoterId
+                );
+                
+                if (beneficiaryInfo && beneficiaryInfo.status === 'suspended') {
+                    userIdToUse = currentUser.id;
+                }
+            }
+            
+            if (numbers.some(n => n.value === value && n.userId === userIdToUse)) {
+                showAlert('هذا الرقم موجود بالفعل', 'error');
+                return;
+            }
+            
+            const number = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                userId: userIdToUse,
+                value: value,
+                notes: notes || null,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                isTaken: false,
+                takenBy: null,
+                takenByName: null,
+                takenByRole: null,
+                takenAt: null
+            };
+            
+            numbers.unshift(number);
+            
+            saveAllData();
+            hideModal();
+            loadContent();
+            showAlert('تم إضافة الرقم بنجاح', 'success');
+        }
+        
+        function editNumber(id) {
+            const number = numbers.find(n => n.id === id);
+            if (!number) return;
+            
+            if (number.isTaken && number.takenByRole === 'beneficiary') {
+                showAlert('لا يمكن تعديل رقم مأخوذ من قبل مستفيد', 'error');
+                return;
+            }
+            
+            document.getElementById('editPhoneNumber').value = number.value;
+            document.getElementById('editNumberNotes').value = number.notes || '';
+            document.getElementById('editNumberId').value = id;
+            document.getElementById('editNumberModal').style.display = 'flex';
+        }
+        
+        function hideEditModal() {
+            document.getElementById('editNumberModal').style.display = 'none';
+        }
+        
+        function updateNumber() {
+            const id = document.getElementById('editNumberId').value;
+            const value = cleanCode(document.getElementById('editPhoneNumber').value);
+            const notes = document.getElementById('editNumberNotes').value.trim();
+            
+            if (value.length < 5) {
+                showAlert('رقم الهاتف قصير جداً', 'error');
+                return;
+            }
+            
+            const number = numbers.find(n => n.id === id);
+            if (!number) return;
+            
+            if (number.isTaken && number.takenByRole === 'beneficiary') {
+                showAlert('لا يمكن تعديل رقم مأخوذ من قبل مستفيد', 'error');
+                hideEditModal();
+                return;
+            }
+            
+            const existingNumber = numbers.find(n => n.value === value && n.id !== id && n.userId === currentUser.id);
+            if (existingNumber) {
+                showAlert('هذا الرقم موجود بالفعل', 'error');
+                return;
+            }
+            
+            numbers = numbers.map(n => {
+                if (n.id === id) {
+                    return {
+                        ...n,
+                        value: value,
+                        notes: notes || null,
+                        updatedAt: new Date().toISOString()
+                    };
+                }
+                return n;
+            });
+            
+            saveAllData();
+            hideEditModal();
+            loadContent();
+            showAlert('تم تحديث الرقم بنجاح', 'success');
+        }
+        
+        function deleteNumber(id) {
+            const number = numbers.find(n => n.id === id);
+            if (!number) return;
+            
+            if (number.isTaken && number.takenByRole === 'beneficiary') {
+                if (!confirm('⚠️ هذا الرقم مأخوذ من قبل مستفيد. هل تريد حذفه مع ذلك؟')) {
+                    return;
+                }
+            } else {
+                showConfirmDeleteModal(id);
+            }
+        }
+        
+        function deleteAllNumbers() {
+            showConfirmDeleteAllModal();
+        }
+        
+        function copyNumber(value, numberId, button) {
+            const role = currentUser.role;
+            const number = numbers.find(n => n.id === numberId);
+            
+            if (!number) {
+                showAlert('الرقم غير موجود', 'error');
+                return;
+            }
+            
+            if (role === 'beneficiary' && currentUser.promoterId) {
+                const beneficiaryInfo = beneficiaries.find(b => 
+                    b.name === currentUser.name && 
+                    b.promoterId === currentUser.promoterId
+                );
+                
+                if (beneficiaryInfo && beneficiaryInfo.status === 'suspended') {
+                    showAlert('❌ حسابك معطل من قبل المروج. لا يمكنك نسخ الأرقام.', 'error');
+                    return;
+                }
+            }
+            
+            if (number.isTaken) {
+                if (role === 'beneficiary') {
+                    const beneficiary = beneficiaries.find(b => 
+                        b.name === currentUser.name && 
+                        b.promoterId === currentUser.promoterId
+                    );
+                    
+                    if (beneficiary && beneficiary.takenNumbers && beneficiary.takenNumbers.includes(numberId)) {
+                        showAlert('لقد نسخت هذا الرقم مسبقاً', 'info');
+                        if (button) updateButtonToCopied(button);
+                        return;
+                    } else {
+                        showAlert('❌ هذا الرقم مأخوذ من قبل مستفيد آخر', 'error');
+                        return;
+                    }
+                } else if (role === 'promoter' || role === 'owner') {
+                    if (number.takenByRole === 'beneficiary') {
+                        showAlert(`هذا الرقم مأخوذ من قبل المستفيد ${number.takenByName}`, 'info');
+                        return;
+                    } else {
+                        showAlert('لقد نسخت هذا الرقم مسبقاً', 'info');
+                        if (button) updateButtonToCopied(button);
+                        return;
+                    }
+                }
+            }
+            
+            navigator.clipboard.writeText(value).then(() => {
+                updateButtonToCopied(button);
+                markNumberAsTaken(numberId, currentUser.id, currentUser.name, role);
+                updateStats();
+                setTimeout(() => {
+                    loadContent();
+                }, 500);
+                showAlert('تم نسخ الرقم: ' + value, 'success');
+            }).catch(err => {
+                showAlert('فشل في نسخ الرقم', 'error');
+            });
+        }
+        
+        function updateButtonToCopied(button) {
+            if (button) {
+                button.innerHTML = '<i class="fas fa-check-circle"></i> تم النسخ';
+                button.classList.add('copied');
+                button.disabled = true;
+            }
+        }
+        
+        function markNumberAsTaken(numberId, userId, userName, userRole) {
+            const number = numbers.find(n => n.id === numberId);
+            if (!number) return;
+            
+            number.isTaken = true;
+            number.takenBy = userId;
+            number.takenByName = userName;
+            number.takenByRole = userRole;
+            number.takenAt = new Date().toISOString();
+            number.updatedAt = new Date().toISOString();
+            
+            if (userRole === 'beneficiary') {
+                const beneficiary = beneficiaries.find(b => 
+                    b.name === currentUser.name && 
+                    b.promoterId === currentUser.promoterId
+                );
+                
+                if (beneficiary) {
+                    if (!beneficiary.takenNumbers) {
+                        beneficiary.takenNumbers = [];
+                    }
+                    if (!beneficiary.takenNumbers.includes(numberId)) {
+                        beneficiary.takenNumbers.push(numberId);
+                        beneficiary.lastAccess = new Date().toISOString();
+                    }
+                    
+                    if (!currentUser.takenNumbers) {
+                        currentUser.takenNumbers = [];
+                    }
+                    if (!currentUser.takenNumbers.includes(numberId)) {
+                        currentUser.takenNumbers.push(numberId);
+                        localStorage.setItem('numbers_currentUser', JSON.stringify(currentUser));
+                    }
+                }
+            }
+            
+            saveAllData();
+        }
+        
+        // === نوافذ إضافية ===
+        
+        function hideMultipleModal() {
+            document.getElementById('multipleNumbersModal').style.display = 'none';
+        }
+        
+        function showMultipleModal() {
+            document.getElementById('multipleNumbers').value = '';
+            document.getElementById('multipleNumbersModal').style.display = 'flex';
+        }
+        
+        function addMultipleNumbers() {
+            const text = document.getElementById('multipleNumbers').value.trim();
+            if (!text) {
+                showAlert('يرجى إدخال الأرقام', 'error');
+                return;
+            }
+            
+            const lines = text.split('\n').filter(line => line.trim());
+            let added = 0;
+            let skipped = 0;
+            
+            const newNumbers = [];
+            
+            lines.forEach(line => {
+                let [number, ...noteParts] = line.split(/[-:]/);
+                number = cleanCode(number.trim());
+                const notes = noteParts.join(' ').trim();
+                
+                if (number.length >= 5) {
+                    let userIdToUse = currentUser.id;
+                    
+                    if (currentUser.role === 'beneficiary') {
+                        const beneficiaryInfo = beneficiaries.find(b => 
+                            b.name === currentUser.name && 
+                            b.promoterId === currentUser.promoterId
+                        );
+                        
+                        if (beneficiaryInfo && beneficiaryInfo.status === 'suspended') {
+                            userIdToUse = currentUser.id;
+                        }
+                    }
+                    
+                    if (!numbers.some(n => n.value === number && n.userId === userIdToUse)) {
+                        newNumbers.unshift({
+                            id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                            userId: userIdToUse,
+                            value: number,
+                            notes: notes || null,
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString(),
+                            isTaken: false,
+                            takenBy: null,
+                            takenByName: null,
+                            takenByRole: null,
+                            takenAt: null
+                        });
+                        added++;
+                    } else {
+                        skipped++;
+                    }
+                } else {
+                    skipped++;
+                }
+            });
+            
+            numbers = [...newNumbers, ...numbers];
+            
+            saveAllData();
+            hideMultipleModal();
+            loadContent();
+            showAlert(`تم إضافة ${added} رقم${added !== 1 ? 'اً' : ''}${skipped > 0 ? `، تم تخطي ${skipped}` : ''}`, 'success');
+        }
+        
+        function hideUsePromoModal() {
+            document.getElementById('usePromoModal').style.display = 'none';
+        }
+        
+        function showUsePromoModal() {
+            document.getElementById('promoCodeInput').value = '';
+            document.getElementById('usePromoModal').style.display = 'flex';
+        }
+        
+        function usePromoCode() {
+            const code = cleanCode(document.getElementById('promoCodeInput').value);
+            if (code.length !== 6) {
+                showAlert('كود الترويج يجب أن يكون 6 أرقام', 'error');
+                return;
+            }
+            
+            const promoter = users.find(u => u.promoCode === code && u.role === 'promoter');
+            if (!promoter || promoter.id === currentUser.id) {
+                showAlert('كود الترويج غير صحيح', 'error');
+                return;
+            }
+            
+            let beneficiary = beneficiaries.find(b => b.promoCode === code && b.name === currentUser.name);
+            
+            if (!beneficiary) {
+                beneficiary = {
+                    id: 'beneficiary_' + Date.now(),
+                    name: currentUser.name,
+                    promoCode: code,
+                    promoterId: promoter.id,
+                    status: 'active',
+                    takenNumbers: [],
+                    createdAt: new Date().toISOString(),
+                    lastAccess: new Date().toISOString()
+                };
+                beneficiaries.push(beneficiary);
+            } else {
+                beneficiary.lastAccess = new Date().toISOString();
+            }
+            
+            currentUser.role = 'beneficiary';
+            currentUser.promoterId = promoter.id;
+            currentUser.promoCode = code;
+            currentUser.takenNumbers = beneficiary.takenNumbers || [];
+            
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = {...currentUser};
+            }
+            
+            localStorage.setItem('numbers_currentUser', JSON.stringify(currentUser));
+            saveAllData();
+            
+            hideUsePromoModal();
+            showAlert(`تم استخدام كود الترويج للمروج: ${promoter.name}`, 'success');
+            showAppContent();
+        }
+        
+        function copyPromoCode() {
+            const user = users.find(u => u.id === currentUser.id);
+            const code = user ? user.promoCode : 'غير متوفر';
+            
+            if (code === 'غير متوفر') {
+                showAlert('لا يوجد كود ترويج', 'error');
+                return;
+            }
+            
+            navigator.clipboard.writeText(code).then(() => {
+                showAlert('تم نسخ كود الترويج', 'success');
+            }).catch(err => {
+                showAlert('فشل في نسخ الكود', 'error');
+            });
+        }
+        
+        function sharePromoViaWhatsApp() {
+            const user = users.find(u => u.id === currentUser.id);
+            const code = user ? user.promoCode : 'غير متوفر';
+            
+            if (code === 'غير متوفر') {
+                showAlert('لا يوجد كود ترويج', 'error');
+                return;
+            }
+            
+            const message = `كود ترويجي في تطبيق مشاركة الأرقام هو: ${code}\nاستخدم هذا الكود لتكون مستفيداً من أرقامي`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+        }
+        
+        function hideChangePromoCodeModal() {
+            document.getElementById('changePromoCodeModal').style.display = 'none';
+        }
+        
+        function showChangePromoCodeModal() {
+            document.getElementById('currentLoginCode').value = '';
+            document.getElementById('changePromoCodeModal').style.display = 'flex';
+        }
+        
+        function confirmChangePromoCode() {
+            const currentCode = cleanCode(document.getElementById('currentLoginCode').value);
+            
+            if (!currentCode || currentCode.length !== 6) {
+                showAlert('يرجى إدخال كود الدخول الحالي', 'error');
+                return;
+            }
+            
+            const user = users.find(u => u.id === currentUser.id);
+            if (!user) {
+                showAlert('حدث خطأ في التحقق', 'error');
+                return;
+            }
+            
+            if (user.loginCode !== currentCode) {
+                showAlert('كود الدخول غير صحيح', 'error');
+                return;
+            }
+            
+            let newPromoCode;
+            do {
+                newPromoCode = '';
+                for (let i = 0; i < 6; i++) {
+                    newPromoCode += Math.floor(Math.random() * 10);
+                }
+            } while (users.some(u => u.promoCode === newPromoCode));
+            
+            const oldPromoCode = user.promoCode;
+            
+            user.promoCode = newPromoCode;
+            
+            beneficiaries = beneficiaries.filter(b => b.promoterId !== currentUser.id);
+            
+            saveAllData();
+            hideChangePromoCodeModal();
+            
+            showAlert(`تم تغيير كود الترويج من ${oldPromoCode} إلى ${newPromoCode}. تم إزالة جميع المستفيدين السابقين.`, 'success');
+            loadContent();
+        }
+        
+        function hideCancelBeneficiaryModal() {
+            document.getElementById('cancelBeneficiaryModal').style.display = 'none';
+        }
+        
+        function showCancelBeneficiaryModal() {
+            document.getElementById('cancelLoginCode').value = '';
+            document.getElementById('cancelBeneficiaryModal').style.display = 'flex';
+        }
+        
+        function confirmCancelBeneficiary() {
+            const loginCode = cleanCode(document.getElementById('cancelLoginCode').value);
+            
+            if (loginCode !== currentUser.loginCode) {
+                showAlert('كود الدخول غير صحيح', 'error');
+                return;
+            }
+            
+            const beneficiary = beneficiaries.find(b => 
+                b.name === currentUser.name && 
+                b.promoterId === currentUser.promoterId
+            );
+            
+            if (beneficiary) {
+                beneficiaries = beneficiaries.filter(b => 
+                    !(b.promoterId === currentUser.promoterId && b.name === currentUser.name)
+                );
+            }
+            
+            currentUser.role = 'promoter';
+            delete currentUser.promoterId;
+            currentUser.takenNumbers = [];
+            
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = {...currentUser};
+            }
+            
+            saveAllData();
+            localStorage.setItem('numbers_currentUser', JSON.stringify(currentUser));
+            
+            hideCancelBeneficiaryModal();
+            showAlert('تم إلغاء الاستفادة بنجاح. أنت الآن مروج', 'success');
+            showAppContent();
+        }
+        
+        // === إدارة المستفيدين ===
+        
+        function toggleBeneficiaryStatus(beneficiaryId) {
+            const beneficiary = beneficiaries.find(b => b.id === beneficiaryId);
+            if (!beneficiary) return;
+            
+            const newStatus = beneficiary.status === 'active' ? 'suspended' : 'active';
+            
+            beneficiary.status = newStatus;
+            beneficiary.lastAccess = new Date().toISOString();
+            
+            if (newStatus === 'suspended') {
+                const promoterId = currentUser.id;
+                const beneficiaryUser = users.find(u => 
+                    u.name === beneficiary.name && 
+                    u.promoterId === promoterId
+                );
+                
+                if (beneficiaryUser && beneficiaryUser.takenNumbers) {
+                    numbers.forEach(number => {
+                        if (number.userId === promoterId && 
+                            number.takenBy === beneficiaryUser.id) {
+                            number.isTaken = false;
+                            number.takenBy = null;
+                            number.takenByName = null;
+                            number.takenByRole = null;
+                            number.takenAt = null;
+                            number.updatedAt = new Date().toISOString();
+                        }
+                    });
+                    
+                    beneficiary.takenNumbers = [];
+                    beneficiaryUser.takenNumbers = [];
+                    
+                    localStorage.setItem('numbers_currentUser', JSON.stringify(currentUser));
+                }
+            }
+            
+            saveAllData();
+            
+            showAlert(`تم ${newStatus === 'active' ? 'تفعيل' : 'تعليق'} المستفيد ${beneficiary.name}`, 'success');
+            loadContent();
+        }
+        
+        function deleteBeneficiary(beneficiaryId) {
+            const beneficiary = beneficiaries.find(b => b.id === beneficiaryId);
+            if (!beneficiary) return;
+            
+            const promoter = users.find(u => u.id === beneficiary.promoterId);
+            
+            if (!confirm(`هل تريد حذف المستفيد: ${beneficiary.name}؟`)) return;
+            
+            const userToDelete = users.find(u => u.name === beneficiary.name);
+            if (userToDelete) {
+                userToDelete.role = 'promoter';
+                delete userToDelete.promoterId;
+                userToDelete.takenNumbers = [];
+            }
+            
+            beneficiaries = beneficiaries.filter(b => b.id !== beneficiaryId);
+            saveAllData();
+            
+            showAlert(`تم حذف المستفيد ${beneficiary.name} وتحويله إلى مروج`, 'success');
+            loadContent();
+        }
+        
+        // === وظائف مساعدة ===
+        
+        function formatPhoneNumber(number) {
+            return number;
+        }
+        
+        function formatDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            } catch (e) {
+                return '--/--/----';
+            }
+        }
+        
+        function showAlert(message, type = 'info') {
+            const alertBox = document.getElementById('alertBox');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            alertBox.appendChild(alert);
+            setTimeout(() => alert.classList.add('show'), 10);
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
